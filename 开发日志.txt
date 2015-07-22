@@ -1,0 +1,47 @@
+极客VIP账户：rosantech 密码：xuexi_123_rosan
+武警总队医院   05110005
+tianyige0726@163.com 密码：~zxl080942
+对于系统用法点滴
+
+1.menu上加链接到menu.inc.php里的全局变量$ZABBIX_MENU中pages元素中添加数组对应在那个导航下添加
+2.创建链接 $a= new CLink("名称","**.php");
+           $a->show();
+3.数据库查询和插入方法
+
+
+   $res=DBfetch(DBselect($sql))             直接出结果,用于查询
+   $res=DBFetchArray(DBselect($sql))        把查询的结果组合成数组返回
+       DBexecute                            执行比如(update,delete,insert)dml语句
+ 
+4.数据库表hosts 字段states
+	经 确认后 hosts表中的status字段为区分主机、模板、代理的表示符；0代表正在被监控的主机、1代表未被监控的主机、3代表模板、4代表启用代理模式的主机
+5代表未启用代理模式的主机
+ 根据value_type的类型可以知道该指标项的结果需要存放到哪一个数据表中。首先value_type的取值范围是0到4 分别对应的数据类型为：整形 浮点型 字符型string 文本型text 日志型log
+
+ 其中value_type=3代表整形数据 需要存储history_uint表中
+ value_type=4代表文本型数据   需要存储到history_text表中
+ value_type=1代表字符型数据   需要存储到history_str表中
+ value_type=0代表浮点型数据   需要存储到history表中
+
+
+查询IP，实例，数据库类型可以去主机宏定义表里面查询，不按照监控项名称查询历史记录。有涉及的参考如下代码
+//查询宏信息
+            $sqlmacros="select  macro,value from hostmacro  where  hostid=".$hostid;
+            $res=DBselect($sqlmacros);
+            while ( $row = DBfetch( $res ) ) {
+                $host_macros[]=$row;
+            }
+
+            foreach ($host_macros as $key => $value) {
+                        switch ($value['macro']) {
+                            case '{$DB_IP}':
+                                        $ip=$value['value'];
+                                break;
+                            case '{$DB_SID}':
+                                        $sid=$value['value'];
+                                break;
+                            case '{$DB_TYPE}':
+                                        $dbtype=$value['value'];
+                                break;
+                        }
+            }
